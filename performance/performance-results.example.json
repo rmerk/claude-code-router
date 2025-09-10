@@ -1,0 +1,155 @@
+{
+  "timestamp": "2025-09-10T01:52:43.008Z",
+  "tests": {
+    "latencyComparison": {
+      "ollama,llama3.2:latest": {
+        "Simple": {
+          "avgLatency": 489,
+          "avgTokens": 50,
+          "tokensPerSecond": 102.86,
+          "minLatency": 464,
+          "maxLatency": 509
+        },
+        "Medium": {
+          "avgLatency": 857,
+          "avgTokens": 100,
+          "tokensPerSecond": 116.73,
+          "minLatency": 846,
+          "maxLatency": 877
+        },
+        "Complex": {
+          "avgLatency": 863,
+          "avgTokens": 100,
+          "tokensPerSecond": 115.83,
+          "minLatency": 850,
+          "maxLatency": 875
+        }
+      },
+      "ollama,qwen2.5-coder:latest": {
+        "Simple": {
+          "avgLatency": 800,
+          "avgTokens": 34,
+          "tokensPerSecond": 42.48,
+          "minLatency": 529,
+          "maxLatency": 1339
+        },
+        "Medium": {
+          "avgLatency": 1329,
+          "avgTokens": 92,
+          "tokensPerSecond": 69.21,
+          "minLatency": 1085,
+          "maxLatency": 1473
+        },
+        "Complex": {
+          "avgLatency": 1436,
+          "avgTokens": 100,
+          "tokensPerSecond": 69.65,
+          "minLatency": 1419,
+          "maxLatency": 1460
+        }
+      },
+      "groq,llama-3.1-70b-versatile": {},
+      "deepseek,deepseek-chat": {}
+    },
+    "throughput": {
+      "totalRequests": 10,
+      "successful": 10,
+      "failed": 0,
+      "totalTime": 1918,
+      "avgTimePerRequest": 192,
+      "requestsPerSecond": 5.21
+    },
+    "costEfficiency": {
+      "ollama,llama3.2:latest": {
+        "inputTokens": 36,
+        "outputTokens": 100,
+        "totalTokens": 136,
+        "totalCost": 0,
+        "costPerToken": 0
+      },
+      "ollama,qwen2.5-coder:latest": {
+        "inputTokens": 40,
+        "outputTokens": 100,
+        "totalTokens": 140,
+        "totalCost": 0,
+        "costPerToken": 0
+      },
+      "groq,llama-3.1-70b-versatile": {
+        "error": "HTTP 401: Unauthorized"
+      },
+      "deepseek,deepseek-chat": {
+        "error": "HTTP 401: Unauthorized"
+      },
+      "openai,gpt-3.5-turbo": {
+        "error": "HTTP 401: Unauthorized"
+      }
+    },
+    "capabilities": {
+      "ollama,llama3.2:latest": {
+        "Code Generation": {
+          "success": true,
+          "tokens": 137,
+          "score": 1
+        },
+        "Reasoning": {
+          "success": true,
+          "tokens": 136,
+          "score": 1
+        },
+        "Creativity": {
+          "success": true,
+          "tokens": 51,
+          "score": 1
+        }
+      },
+      "ollama,qwen2.5-coder:latest": {
+        "Code Generation": {
+          "success": true,
+          "tokens": 141,
+          "score": 1
+        },
+        "Reasoning": {
+          "success": true,
+          "tokens": 140,
+          "score": 1
+        },
+        "Creativity": {
+          "success": true,
+          "tokens": 58,
+          "score": 1
+        }
+      },
+      "groq,llama-3.1-70b-versatile": {
+        "Code Generation": {
+          "success": false,
+          "error": "HTTP 401: Unauthorized"
+        },
+        "Reasoning": {
+          "success": false,
+          "error": "HTTP 401: Unauthorized"
+        },
+        "Creativity": {
+          "success": false,
+          "error": "HTTP 401: Unauthorized"
+        }
+      }
+    }
+  },
+  "summary": {
+    "fastestModel": {
+      "model": "ollama,llama3.2:latest",
+      "avgLatency": 736
+    },
+    "mostCostEffective": {
+      "model": "ollama,llama3.2:latest",
+      "cost": 0
+    },
+    "bestOverall": null,
+    "recommendations": [
+      "For speed-critical tasks, use: ollama,llama3.2:latest",
+      "For cost efficiency, use: ollama,llama3.2:latest",
+      "For coding tasks, prefer Ollama models (free, fast, specialized)",
+      "For complex reasoning, consider DeepSeek models (cost-effective alternative to GPT-4)"
+    ]
+  }
+}

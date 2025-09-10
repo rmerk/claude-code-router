@@ -6,8 +6,26 @@
     "ccr": "./dist/cli.js"
   },
   "scripts": {
-    "build": "node scripts/build.js",
-    "release": "npm run build && npm publish"
+    "build": "tsx scripts/ts/build.ts",
+    "dev": "./start-dev.sh",
+    "dev:stop": "./stop-dev.sh",
+    "dev:backend": "node dist/cli.js start",
+    "dev:ui": "cd ui && pnpm dev",
+    "release": "npm run build && npm publish",
+    "setup": "./scripts/shell/quick-start.sh",
+    "setup:env": "./scripts/shell/setup-env.sh",
+    "setup:cron": "./scripts/shell/setup-cron.sh",
+    "maintenance": "./scripts/shell/auto-maintenance.sh",
+    "health-check": "tsx scripts/ts/health-check.ts",
+    "monitor": "tsx scripts/ts/monitoring.ts",
+    "model-manager": "tsx scripts/ts/model-manager.ts",
+    "ollama-proxy": "tsx scripts/ts/ollama-proxy.ts",
+    "test": "tsx tests/runner.ts",
+    "test:routing": "tsx tests/test-routing.ts",
+    "test:cost": "tsx tests/test-cost-routing.ts",
+    "test:error": "tsx tests/test-error-handling.ts",
+    "performance": "tsx performance/performance-test.ts",
+    "performance:results": "cat performance/performance-results.json"
   },
   "keywords": [
     "claude",
@@ -34,6 +52,7 @@
     "esbuild": "^0.25.1",
     "fastify": "^5.4.0",
     "shx": "^0.4.0",
+    "tsx": "^4.19.1",
     "typescript": "^5.8.2"
   },
   "publishConfig": {

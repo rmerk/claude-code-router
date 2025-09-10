@@ -6,8 +6,58 @@ import fastifyStatic from "@fastify/static";
 import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { homedir } from "os";
 
+// Load custom transformers from the transformers directory
+function loadCustomTransformers(server: Server) {
+  console.log('🔧 Starting custom transformer loading...');
+  const transformersDir = join(__dirname, '..', 'transformers');
+  console.log(`Looking for custom transformers in: ${transformersDir}`);
+
+  if (!existsSync(transformersDir)) {
+    console.log('No custom transformers directory found');
+    return;
+  }
+
+  try {
+    const files = readdirSync(transformersDir);
+    console.log(`Found transformer files: ${files.join(', ')}`);
+
+    for (const file of files) {
+      if (file.endsWith('.js')) {
+        try {
+          const transformerPath = join(transformersDir, file);
+          console.log(`Loading transformer from: ${transformerPath}`);
+
+          const transformer = require(transformerPath);
+          console.log(`Transformer loaded:`, transformer);
+
+          if (transformer && transformer.name) {
+            console.log(`Registering custom transformer: ${transformer.name}`);
+
+            // Try to register the transformer using the correct method
+            if (server.app._server && server.app._server.transformerService) {
+              server.app._server.transformerService.registerTransformer(transformer);
+              console.log(`Successfully registered transformer: ${transformer.name}`);
+            } else {
+              console.error('Transformer service not available');
+            }
+          } else {
+            console.error(`Invalid transformer format in ${file}`);
+          }
+        } catch (error) {
+          console.error(`Failed to load transformer ${file}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load custom transformers:', error);
+  }
+}
+
 export const createServer = (config: any): Server => {
   const server = new Server(config);
+
+  // Load custom transformers
+  loadCustomTransformers(server);
 
   // Add endpoint to read config.json with access control
   server.app.get("/api/config", async (req, reply) => {

@@ -1,7 +1,60 @@
-node_modules
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment files
 .env
+.env.local
+.env.production
+.env.development
+
+# Logs
+*.log
 log.txt
-.idea
-dist
+logs/
+*.log.*
+ccr-*.log
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Performance results (keep structure but not results)
+performance/performance-results.json
+!performance/performance-results.example.json
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
 .DS_Store
-.vscode
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Test results
+test-results/
+coverage/
+
+# Config backups
+*.bak
+*.backup
+config.json.backup

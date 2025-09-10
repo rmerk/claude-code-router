@@ -7,8 +7,8 @@ I am seeking funding support for this project to better sustain its development.
 
 > A powerful tool to route Claude Code requests to different models and customize any request.
 
-> Now you can use models such as `GLM-4.5`, `Kimi-K2`, `Qwen3-Coder-480B-A35B`, and `DeepSeek v3.1` for free through the [iFlow Platform](https://platform.iflow.cn/docs/api-mode).     
-> You can use the `ccr ui` command to directly import the `iflow` template in the UI. It’s worth noting that iFlow limits each user to a concurrency of 1, which means you’ll need to route background requests to other models.      
+> Now you can use models such as `GLM-4.5`, `Kimi-K2`, `Qwen3-Coder-480B-A35B`, and `DeepSeek v3.1` for free through the [iFlow Platform](https://platform.iflow.cn/docs/api-mode).
+> You can use the `ccr ui` command to directly import the `iflow` template in the UI. It’s worth noting that iFlow limits each user to a concurrency of 1, which means you’ll need to route background requests to other models.
 > If you’d like a better experience, you can try [iFlow CLI](https://cli.iflow.cn).
 
 ![](blog/images/claude-code.png)
@@ -26,7 +26,14 @@ I am seeking funding support for this project to better sustain its development.
 
 ## 🚀 Getting Started
 
-### 1. Installation
+### 1. Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Claude Code CLI (optional, for testing)
+- Ollama (optional, for local model support)
+
+### 2. Installation
 
 First, ensure you have [Claude Code](https://docs.anthropic.com/en/docs/claude-code/quickstart) installed:
 
@@ -38,6 +45,15 @@ Then, install Claude Code Router:
 
 ```shell
 npm install -g @musistudio/claude-code-router
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/musistudio/claude-code-router.git
+cd claude-code-router
+npm install
+npm run build
 ```
 
 ### 2. Configuration
@@ -59,6 +75,85 @@ The `config.json` file has several key sections:
 - **`Providers`**: Used to configure different model providers.
 - **`Router`**: Used to set up routing rules. `default` specifies the default model, which will be used for all requests if no other route is configured.
 - **`API_TIMEOUT_MS`**: Specifies the timeout for API calls in milliseconds.
+
+## 🦙 Ollama Integration
+
+The Claude Code Router includes comprehensive Ollama support for running AI models locally, providing cost-effective and private AI inference.
+
+### Ollama Setup
+
+#### 1. Install Ollama
+
+```bash
+# macOS (using Homebrew)
+brew install ollama
+
+# Linux
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Windows
+# Download from: https://ollama.ai/download
+```
+
+#### 2. Start Ollama Service
+
+```bash
+# Start Ollama (runs in background)
+ollama serve
+
+# Verify it's running
+ollama list
+```
+
+#### 3. Pull Recommended Models
+
+```bash
+# General purpose model - fast and versatile
+ollama pull llama3.2:latest
+
+# Coding specialist - optimized for programming tasks
+ollama pull qwen2.5-coder:latest
+
+# Advanced reasoning (optional - large model)
+ollama pull deepseek-coder-v2:latest
+```
+
+### Performance Characteristics
+
+| Model | Simple Query | Medium Query | Complex Query | Cost |
+|-------|-------------|--------------|---------------|------|
+| **Ollama Llama 3.2** | 489ms | 857ms | 863ms | **$0** |
+| **Ollama Qwen 2.5 Coder** | 800ms | 1,329ms | 1,436ms | **$0** |
+| **Groq Llama 3.1 70B** | ~200-400ms | ~400-800ms | ~800-1200ms | $0.00059/1K |
+| **DeepSeek Chat** | ~300-500ms | ~500-900ms | ~900-1500ms | $0.00014/1K |
+
+#### Cost Efficiency
+| Model | Cost per 1000 tokens | Annual Savings (100K tokens) |
+|-------|----------------------|------------------------------|
+| **Ollama Models** | **$0.00** | **$0** |
+| **DeepSeek** | $0.00014 | ~$14 |
+| **Groq** | $0.00059 | ~$59 |
+| **GPT-3.5** | $0.002 | ~$200 |
+
+### Model Recommendations
+
+1. **General Conversation**: `ollama,llama3.2:latest`
+   - Fastest response times
+   - Excellent for casual queries
+   - Zero cost
+
+2. **Coding Tasks**: `ollama,qwen2.5-coder:latest`
+   - Specialized for programming
+   - Better code generation quality
+   - Still zero cost
+
+3. **Complex Reasoning**: `deepseek,deepseek-reasoner`
+   - Best balance of cost vs capability
+   - Excellent for analysis and reasoning
+
+4. **Creative Writing**: `anthropic,claude-3-5-sonnet-20241022`
+   - Superior creative output
+   - Best for writing and content creation
 
 #### Environment Variable Interpolation
 
@@ -372,7 +467,7 @@ In your `config.json`:
 
 The custom router file must be a JavaScript module that exports an `async` function. This function receives the request object and the config object as arguments and should return the provider and model name as a string (e.g., `"provider_name,model_name"`), or `null` to fall back to the default router.
 
-Here is an example of a `custom-router.js` based on `custom-router.example.js`:
+Here is an example of a `custom-router.js` based on `custom-router.example.ts`:
 
 ```javascript
 // /User/xxx/.claude-code-router/custom-router.js
@@ -476,6 +571,118 @@ jobs:
 > **Note**: When running in GitHub Actions or other automation environments, make sure to set `"NON_INTERACTIVE_MODE": true` in your configuration to prevent the process from hanging due to stdin handling issues.
 
 This setup allows for interesting automations, like running tasks during off-peak hours to reduce API costs.
+
+## 🛠️ Utilities & Tools
+
+The project includes several utility scripts to help with setup, monitoring, and maintenance:
+
+### Setup Scripts
+
+- **`scripts/shell/quick-start.sh`**: Interactive setup script for first-time configuration
+- **`scripts/shell/setup-env.sh`**: Automated environment file creation with API key validation
+- **`scripts/shell/setup-cron.sh`**: Cron job setup for automated maintenance tasks
+- **`scripts/shell/auto-maintenance.sh`**: Automated system maintenance and cleanup
+
+### Development Commands
+
+For developers working on the project, you can use these commands to start both the backend and UI simultaneously:
+
+#### Start Both Servers (Recommended)
+```bash
+# Using npm script (cross-platform)
+npm run dev
+
+# Or using the shell script directly
+./start-dev.sh
+
+# Or on Windows
+start-dev.bat
+```
+
+#### Stop Both Servers
+```bash
+# Using npm script (cross-platform)
+npm run dev:stop
+
+# Or using the shell script directly
+./stop-dev.sh
+
+# Or on Windows (manual)
+taskkill /F /IM node.exe
+```
+
+#### Start Individual Servers
+```bash
+# Start only backend API server
+npm run dev:backend
+
+# Start only UI development server
+npm run dev:ui
+```
+
+#### Manual Commands
+```bash
+# Backend server (port 3456)
+node dist/cli.js start
+
+# UI server (port 5173 with API proxy)
+cd ui && pnpm dev
+```
+
+#### Server URLs
+- **UI Application**: http://localhost:5173/
+- **Backend API**: http://localhost:3456/
+- **API Proxy**: UI proxies `/api/*` requests to backend
+
+The development startup script will:
+- ✅ Check port availability before starting
+- ✅ Start both servers in the background
+- ✅ Wait for services to be ready
+- ✅ Display process IDs for easy management
+- ✅ Show helpful stop commands
+- 🛑 Handle cleanup on script termination
+
+The companion stop script provides:
+- 🔍 Smart process detection by port
+- 🛑 Graceful shutdown with fallback to force kill
+- 📊 Clear status reporting
+- 🧹 Complete cleanup verification
+
+### Monitoring & Health Checks
+
+- **`scripts/ts/health-check.ts`**: Comprehensive provider connectivity and model availability testing
+- **`scripts/ts/monitoring.ts`**: Performance metrics collection and reporting
+- **`scripts/ts/model-manager.ts`**: Ollama model management and automated updates
+
+### Testing & Validation
+
+- **`tests/test-routing.ts`**: Integration tests for routing logic and custom router validation
+- **`tests/test-cost-routing.ts`**: Cost optimization validation and budget testing
+- **`tests/test-error-handling.ts`**: Error handling verification and fallback testing
+
+### Performance & Analytics
+
+- **`performance/performance-test.ts`**: Comprehensive benchmarking and latency measurement
+- **`performance/performance-results.json`**: Performance test results and metrics
+
+### Usage Examples
+
+```bash
+# Quick setup
+./scripts/shell/quick-start.sh
+
+# Health check all providers
+tsx scripts/ts/health-check.ts
+
+# Performance testing
+tsx performance/performance-test.ts
+
+# Integration tests
+tsx tests/test-routing.ts
+
+# Monitor system metrics
+tsx scripts/ts/monitoring.ts report
+```
 
 ## 📝 Further Reading
 

@@ -148,7 +148,7 @@ async function run(options: RunOptions = {}) {
   });
   // Add async preHandler hook for authentication
   server.addHook("preHandler", async (req, reply) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const done = (err?: Error) => {
         if (err) reject(err);
         else resolve();
@@ -281,7 +281,13 @@ async function run(options: RunOptions = {}) {
                 if (!response.ok) {
                   return undefined;
                 }
-                const stream = response.body!.pipeThrough(new SSEParserTransform())
+                const textDecoderStream = new TransformStream<Uint8Array, string>({
+                  transform(chunk, controller) {
+                    const text = new TextDecoder().decode(chunk);
+                    controller.enqueue(text);
+                  }
+                });
+                const stream = response.body!.pipeThrough(textDecoderStream).pipeThrough(new SSEParserTransform())
                 const reader = stream.getReader()
                 while (true) {
                   try {
