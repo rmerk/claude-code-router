@@ -3,8 +3,8 @@
  * Converts between OpenAI format and Ollama's API format
  */
 
-import { OllamaTransformer } from '../src/types/transformer';
-import { HttpRequest, HttpResponse, OllamaResponse, ChatResponse, StreamChunk } from '../src/types/index';
+import { OllamaTransformer } from '../types/transformer';
+import { HttpRequest, HttpResponse, OllamaResponse, ChatResponse, StreamChunk } from '../types/index';
 
 const transformer: OllamaTransformer = {
   name: 'ollama',

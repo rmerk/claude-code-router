@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { PID_FILE, REFERENCE_COUNT_FILE } from '../constants';
-import { readConfigFile } from '.';
+import { PID_FILE, REFERENCE_COUNT_FILE } from '../../constants';
+import { readConfigFile } from '..';
 import find from 'find-process';
+import { cleanupManager } from '../CleanupManager';
 
 export async function isProcessRunning(pid: number): Promise<boolean> {
     try {
@@ -57,14 +58,10 @@ export function savePid(pid: number) {
 }
 
 export function cleanupPidFile() {
-    if (existsSync(PID_FILE)) {
-        try {
-            const fs = require('fs');
-            fs.unlinkSync(PID_FILE);
-        } catch (e) {
-            // Ignore cleanup errors
-        }
-    }
+    // Use centralized cleanup manager for better error handling
+    cleanupManager.cleanupPidFile().catch(error => {
+        console.warn('PID file cleanup failed:', error);
+    });
 }
 
 export function getServicePid(): number | null {

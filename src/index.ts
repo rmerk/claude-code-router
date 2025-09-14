@@ -2,22 +2,13 @@ import { existsSync } from "fs";
 import { writeFile } from "fs/promises";
 import { homedir } from "os";
 import path, { join } from "path";
-import { initConfig, initDir, cleanupLogFiles } from "./utils";
+import { initConfig, initDir, cleanupLogFiles, cleanupPidFile, isServiceRunning, savePid, SSEParserTransform, SSESerializerTransform, rewriteStream } from "./utils";
 import { createServer } from "./server";
 import { router } from "./utils/router";
 import { apiKeyAuth } from "./middleware/auth";
-import {
-  cleanupPidFile,
-  isServiceRunning,
-  savePid,
-} from "./utils/processCheck";
-import { CONFIG_FILE } from "./constants";
+import { CONFIG_FILE, HOME_DIR } from "./constants";
 import { createStream } from 'rotating-file-stream';
-import { HOME_DIR } from "./constants";
 import { sessionUsageCache } from "./utils/cache";
-import {SSEParserTransform} from "./utils/SSEParser.transform";
-import {SSESerializerTransform} from "./utils/SSESerializer.transform";
-import {rewriteStream} from "./utils/rewriteStream";
 import JSON5 from "json5";
 import { IAgent } from "./agents/type";
 import agentsManager from "./agents";

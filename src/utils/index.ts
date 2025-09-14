@@ -8,7 +8,7 @@ import {
   HOME_DIR,
   PLUGINS_DIR,
 } from "../constants";
-import { cleanupLogFiles } from "./logCleanup";
+import { CleanupManager, cleanupManager } from "./CleanupManager";
 
 // Function to interpolate environment variables in config values
 const interpolateEnvVars = (obj: any): any => {
@@ -173,8 +173,27 @@ export const initConfig = async () => {
   return config;
 };
 
-// 导出日志清理函数
-export { cleanupLogFiles };
+// Export cleanup functionality
+export { CleanupManager, cleanupManager };
 
-// 导出更新功能
-export { checkForUpdates, performUpdate } from "./update";
+// Export legacy cleanup function for backward compatibility
+export const cleanupLogFiles = (maxFiles?: number) => cleanupManager.cleanupLogFiles(maxFiles);
+
+// Export update functionality
+export { checkForUpdates, performUpdate } from "./system/update";
+
+// Export process utilities
+export * from "./process/processCheck";
+export * from "./process/close";
+
+// Export stream utilities
+export * from "./streams/SSEParser.transform";
+export * from "./streams/SSESerializer.transform";
+export * from "./streams/rewriteStream";
+
+// Export system utilities
+export * from "./system/status";
+export * from "./system/statusline";
+
+// Export code command utility
+export * from "./codeCommand";

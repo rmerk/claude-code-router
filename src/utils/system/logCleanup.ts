@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { HOME_DIR } from "../constants";
+import { HOME_DIR } from "../../constants";
 
 /**
  * Cleans up old log files, keeping only the most recent ones

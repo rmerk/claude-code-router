@@ -65,8 +65,8 @@ function copyUiArtifacts(): void {
 
 function copyTransformers(): void {
   console.log('Copying transformers...');
-  const transformersDir = path.join(__dirname, '..', 'transformers');
-  const destDir = path.join(__dirname, '..', 'dist');
+  const transformersDir = path.join(__dirname, '..', 'src', 'transformers');
+  const destDir = path.join(__dirname, '..', 'dist', 'src');
 
   if (fs.existsSync(transformersDir)) {
     execSync(`shx cp -r "${transformersDir}" "${destDir}/"`, { stdio: 'inherit' });

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { execSync } from "child_process";
 import path from "node:path";
-import { CONFIG_FILE, HOME_DIR } from "../constants";
+import { CONFIG_FILE, HOME_DIR } from "../../constants";
 import JSON5 from "json5";
 
 export interface StatusLineModuleConfig {

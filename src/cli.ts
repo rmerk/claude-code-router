@@ -1,13 +1,6 @@
 #!/usr/bin/env node
 import { run } from "./index";
-import { showStatus } from "./utils/status";
-import { executeCodeCommand } from "./utils/codeCommand";
-import { parseStatusLineData, type StatusLineInput } from "./utils/statusline";
-import {
-  cleanupPidFile,
-  isServiceRunning,
-  getServiceInfo,
-} from "./utils/processCheck";
+import { showStatus, executeCodeCommand, parseStatusLineData, type StatusLineInput, cleanupPidFile, isServiceRunning, getServiceInfo } from "./utils";
 import { version } from "../package.json";
 import { spawn, exec } from "child_process";
 import { PID_FILE, REFERENCE_COUNT_FILE } from "./constants";
@@ -20,7 +13,7 @@ const HELP_TEXT = `
 Usage: ccr [command]
 
 Commands:
-  start         Start server 
+  start         Start server
   stop          Stop server
   restart       Restart server
   status        Show server status
@@ -56,6 +49,90 @@ async function waitForService(
   return false;
 }
 
+/**
+ * Handle the stop command
+ */
+async function handleStopCommand(): Promise<void> {
+  try {
+    const pid = parseInt(readFileSync(PID_FILE, "utf-8"));
+    process.kill(pid);
+    cleanupPidFile();
+    if (existsSync(REFERENCE_COUNT_FILE)) {
+      try {
+        fs.unlinkSync(REFERENCE_COUNT_FILE);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+    }
+    console.log("claude code router service has been successfully stopped.");
+  } catch (e) {
+    console.log("Failed to stop the service. It may have already been stopped.");
+    cleanupPidFile();
+  }
+}
+
+/**
+ * Handle the statusline command
+ */
+async function handleStatuslineCommand(): Promise<void> {
+  // Read JSON input from stdin
+  let inputData = "";
+  process.stdin.setEncoding("utf-8");
+  process.stdin.on("readable", () => {
+    let chunk;
+    while ((chunk = process.stdin.read()) !== null) {
+      inputData += chunk;
+    }
+  });
+
+  process.stdin.on("end", async () => {
+    try {
+      const input: StatusLineInput = JSON.parse(inputData);
+      const statusLine = await parseStatusLineData(input);
+      console.log(statusLine);
+    } catch (error) {
+      console.error("Error parsing status line data:", error);
+      process.exit(1);
+    }
+  });
+}
+
+/**
+ * Handle the code command
+ */
+async function handleCodeCommand(isRunning: boolean): Promise<void> {
+  if (!isRunning) {
+    console.log("Service not running, starting service...");
+    const cliPath = join(__dirname, "cli.js");
+    const startProcess = spawn("node", [cliPath, "start"], {
+      detached: true,
+      stdio: "ignore",
+    });
+
+    startProcess.on("error", (error) => {
+      console.error("Failed to start service:", error.message);
+      process.exit(1);
+    });
+
+    startProcess.unref();
+
+    if (await waitForService()) {
+      // Join all code arguments into a single string to preserve spaces within quotes
+      const codeArgs = process.argv.slice(3);
+      executeCodeCommand(codeArgs);
+    } else {
+      console.error(
+        "Service startup timeout, please manually run `ccr start` to start the service"
+      );
+      process.exit(1);
+    }
+  } else {
+    // Join all code arguments into a single string to preserve spaces within quotes
+    const codeArgs = process.argv.slice(3);
+    executeCodeCommand(codeArgs);
+  }
+}
+
 async function main() {
   const isRunning = await isServiceRunning()
   switch (command) {
@@ -63,95 +140,16 @@ async function main() {
       run();
       break;
     case "stop":
-      try {
-        const pid = parseInt(readFileSync(PID_FILE, "utf-8"));
-        process.kill(pid);
-        cleanupPidFile();
-        if (existsSync(REFERENCE_COUNT_FILE)) {
-          try {
-            fs.unlinkSync(REFERENCE_COUNT_FILE);
-          } catch (e) {
-            // Ignore cleanup errors
-          }
-        }
-        console.log(
-          "claude code router service has been successfully stopped."
-        );
-      } catch (e) {
-        console.log(
-          "Failed to stop the service. It may have already been stopped."
-        );
-        cleanupPidFile();
-      }
+      await handleStopCommand();
       break;
     case "status":
       await showStatus();
       break;
     case "statusline":
-      // 从stdin读取JSON输入
-      let inputData = "";
-      process.stdin.setEncoding("utf-8");
-      process.stdin.on("readable", () => {
-        let chunk;
-        while ((chunk = process.stdin.read()) !== null) {
-          inputData += chunk;
-        }
-      });
-
-      process.stdin.on("end", async () => {
-        try {
-          const input: StatusLineInput = JSON.parse(inputData);
-          const statusLine = await parseStatusLineData(input);
-          console.log(statusLine);
-        } catch (error) {
-          console.error("Error parsing status line data:", error);
-          process.exit(1);
-        }
-      });
+      await handleStatuslineCommand();
       break;
     case "code":
-      if (!isRunning) {
-        console.log("Service not running, starting service...");
-        const cliPath = join(__dirname, "cli.js");
-        const startProcess = spawn("node", [cliPath, "start"], {
-          detached: true,
-          stdio: "ignore",
-        });
-
-        // let errorMessage = "";
-        // startProcess.stderr?.on("data", (data) => {
-        //   errorMessage += data.toString();
-        // });
-
-        startProcess.on("error", (error) => {
-          console.error("Failed to start service:", error.message);
-          process.exit(1);
-        });
-
-        // startProcess.on("close", (code) => {
-        //   if (code !== 0 && errorMessage) {
-        //     console.error("Failed to start service:", errorMessage.trim());
-        //     process.exit(1);
-        //   }
-        // });
-
-        startProcess.unref();
-
-        if (await waitForService()) {
-          // Join all code arguments into a single string to preserve spaces within quotes
-          const codeArgs = process.argv.slice(3);
-          executeCodeCommand(codeArgs);
-        } else {
-          console.error(
-            "Service startup timeout, please manually run `ccr start` to start the service"
-          );
-          process.exit(1);
-        }
-      } else {
-        // Join all code arguments into a single string to preserve spaces within quotes
-        const codeArgs = process.argv.slice(3);
-        executeCodeCommand(codeArgs);
-      }
+      await handleCodeCommand(isRunning);
       break;
     case "ui":
       // Check if service is running
