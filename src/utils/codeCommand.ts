@@ -1,10 +1,10 @@
 import { spawn, type StdioOptions } from "child_process";
 import { readConfigFile } from ".";
-import { closeService } from "./close";
+import { closeService } from "./process/close";
 import {
   decrementReferenceCount,
   incrementReferenceCount,
-} from "./processCheck";
+} from "./process/processCheck";
 import {HOME_DIR} from "../constants";
 import {join} from "path";
 

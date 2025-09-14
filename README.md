@@ -1,9 +1,12 @@
-# Claude Code Router
+![](blog/images/claude-code-router-img.png)
+
+[![](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%B3-%E4%B8%AD%E6%96%87%E7%89%88-ff0000?style=flat)](README_zh.md)
+[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white)](https://discord.gg/rdftVMaUcS)
+[![](https://img.shields.io/github/license/musistudio/claude-code-router)](https://github.com/musistudio/claude-code-router/blob/main/LICENSE)
+
+<hr>
 
 I am seeking funding support for this project to better sustain its development. If you have any ideas, feel free to reach out to me: [m@musiiot.top](mailto:m@musiiot.top)
-
-
-[中文版](README_zh.md)
 
 > A powerful tool to route Claude Code requests to different models and customize any request.
 
@@ -23,6 +26,8 @@ I am seeking funding support for this project to better sustain its development.
 - **Dynamic Model Switching**: Switch models on-the-fly within Claude Code using the `/model` command.
 - **GitHub Actions Integration**: Trigger Claude Code tasks in your GitHub workflows.
 - **Plugin System**: Extend functionality with custom transformers.
+- **Advanced Cleanup Management**: Intelligent cleanup of log files, PID files, and backups with configurable retention policies.
+- **Improved Architecture**: Well-organized codebase with modular utilities, centralized cleanup management, and comprehensive test coverage.
 
 ## 🚀 Getting Started
 
@@ -786,3 +791,47 @@ A huge thank you to all our sponsors for their generous support!
 - @\*叶
 
 (If your name is masked, please contact me via my homepage email to update it with your GitHub username.)
+
+## 🏗️ Project Structure
+
+The project has been reorganized with a clean, modular architecture:
+
+```
+src/
+├── agents/             # AI agent implementations
+├── middleware/         # Express middleware (auth, etc.)
+├── transformers/       # API format transformers (Ollama, etc.)
+├── types/             # TypeScript type definitions
+└── utils/             # Utility modules organized by function
+    ├── process/       # Process management (PID, service control)
+    ├── streams/       # Stream utilities (SSE, rewrite)
+    ├── system/        # System utilities (status, logging)
+    ├── CleanupManager.ts  # Centralized cleanup management
+    ├── cache.ts       # Caching utilities
+    ├── codeCommand.ts # Claude Code command execution
+    └── router.ts      # Request routing logic
+```
+
+### Cleanup Management
+
+The project includes a sophisticated cleanup system via `CleanupManager`:
+
+- **Automatic log rotation**: Keeps only the most recent log files (configurable)
+- **PID file cleanup**: Robust cleanup with retry mechanisms
+- **Backup management**: Automatically removes old backups
+- **Periodic cleanup**: Schedule automatic maintenance
+- **Statistics tracking**: Monitor cleanup effectiveness
+
+Example usage:
+```typescript
+import { cleanupManager } from './src/utils/CleanupManager';
+
+// Perform comprehensive cleanup
+await cleanupManager.performFullCleanup({
+  maxLogFiles: 10,
+  maxBackups: 5
+});
+
+// Schedule periodic cleanup (every hour)
+cleanupManager.schedulePeriodicCleanup(60 * 60 * 1000);
+```

@@ -1,4 +1,4 @@
-import { getServiceInfo } from './processCheck';
+import { getServiceInfo } from '../process/processCheck';
 import { existsSync, readFileSync } from 'fs';
 import path from 'path';
 import os from 'os';
