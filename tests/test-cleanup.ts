@@ -35,7 +35,7 @@ class CleanupTest {
 
   async testLogFilesCleanup() {
     console.log('\n📝 Testing log files cleanup...');
-    
+
     const testLogsDir = path.join(this.testDir, 'logs');
     await fs.mkdir(testLogsDir, { recursive: true });
 
@@ -76,7 +76,7 @@ class CleanupTest {
 
   async testBackupCleanup() {
     console.log('\n💾 Testing backup cleanup...');
-    
+
     const testBackupDir = path.join(this.testDir, 'backups');
     await fs.mkdir(testBackupDir, { recursive: true });
 
@@ -114,12 +114,12 @@ class CleanupTest {
 
   async testCleanupStats() {
     console.log('\n📊 Testing cleanup statistics...');
-    
+
     try {
       const stats = await this.cleanupManager.getCleanupStats();
-      
-      if (typeof stats.logFiles === 'number' && 
-          typeof stats.pidFileExists === 'boolean' && 
+
+      if (typeof stats.logFiles === 'number' &&
+          typeof stats.pidFileExists === 'boolean' &&
           typeof stats.logsDirectorySize === 'number') {
         console.log('✅ Cleanup stats test passed');
         console.log(`  Log files: ${stats.logFiles}`);
@@ -138,10 +138,10 @@ class CleanupTest {
 
   async testSingletonPattern() {
     console.log('\n🔗 Testing singleton pattern...');
-    
+
     const instance1 = CleanupManager.getInstance();
     const instance2 = CleanupManager.getInstance();
-    
+
     if (instance1 === instance2) {
       console.log('✅ Singleton pattern test passed');
       return true;
