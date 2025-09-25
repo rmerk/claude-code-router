@@ -114,7 +114,8 @@
       "api_base_url": "http://localhost:11434/v1/chat/completions",
       "api_key": "ollama",
       "models": [
-        "qwen2.5-coder:latest"
+        "qwen2.5-coder:latest",
+        "danielsheep/gpt-oss-20b-Unsloth:latest"
       ]
     },
     {
