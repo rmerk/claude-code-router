@@ -74,6 +74,9 @@ ollama pull qwen2.5-coder:latest
 
 # Advanced reasoning (optional - large model)
 ollama pull deepseek-coder-v2:latest
+
+# High-performance open source model - 20B parameters
+ollama pull danielsheep/gpt-oss-20b-Unsloth:latest
 ```
 
 ### Performance Characteristics
